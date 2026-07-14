@@ -18,12 +18,71 @@ export default function Home() {
     setParticles(generatedParticles);
   }, []);
 
+  // Turbopack ile %100 uyumlu çalışan CSS animasyonları
+  const cssStyles = `
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(100vh) scale(0);
+        opacity: 0;
+      }
+      50% {
+        opacity: 0.7;
+      }
+      100% {
+        transform: translateY(-20vh) scale(1);
+        opacity: 0;
+      }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% {
+        text-shadow: 0 0 10px rgba(255,255,255,0.2), 0 0 20px rgba(255,255,255,0.2);
+      }
+      50% {
+        text-shadow: 0 0 20px rgba(255,0,0,0.6), 0 0 40px rgba(255,0,0,0.4);
+        color: #ff3333;
+      }
+    }
+
+    @keyframes glitch {
+      0% { transform: translate(0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(-2px, -2px); }
+      60% { transform: translate(2px, 2px); }
+      80% { transform: translate(2px, -2px); }
+      100% { transform: translate(0); }
+    }
+
+    .glitch-text {
+      animation: glitch 1s linear infinite;
+    }
+
+    .animated-title {
+      animation: pulseGlow 3s infinite;
+    }
+
+    /* Mobil cihazlar için başlıkların ekrandan taşmasını önleyen responsive ayar */
+    @media (max-width: 768px) {
+      .animated-title {
+        font-size: 1.8rem !important;
+      }
+      .glitch-text {
+        font-size: 0.95rem !important;
+      }
+    }
+  `;
+
   return (
     <main style={styles.container}>
-      {/* Arka Plan Görseli */}
+      {/* CSS Animasyonlarını güvenle sayfaya basıyoruz */}
+      <style dangerouslySetInnerHTML={{ __html: cssStyles }} />
+
+      {/* Arka Plan Görseli - Cover kilitli */}
       <div style={styles.bgImage} />
 
-      {/* Siyah Yarı Saydam Katman (Yazıların okunması ve karanlık tema için) */}
+      {/* Siyah Yarı Saydam Katman */}
       <div style={styles.overlay} />
 
       {/* Uçuşan Partiküller */}
@@ -47,52 +106,6 @@ export default function Home() {
           />
         ))}
       </div>
-
-      {/* CSS Animasyonları */}
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
-
-        @keyframes floatUp {
-          0% {
-            transform: translateY(100vh) scale(0);
-            opacity: 0;
-          }
-          50% {
-            opacity: 0.7;
-          }
-          100% {
-            transform: translateY(-20vh) scale(1);
-            opacity: 0;
-          }
-        }
-
-        @keyframes pulseGlow {
-          0%, 100% {
-            text-shadow: 0 0 10px rgba(255,255,255,0.2), 0 0 20px rgba(255,255,255,0.2);
-          }
-          50% {
-            text-shadow: 0 0 20px rgba(255,0,0,0.6), 0 0 40px rgba(255,0,0,0.4);
-            color: #ff3333;
-          }
-        }
-
-        @keyframes glitch {
-          0% { transform: translate(0) }
-          20% { transform: translate(-2px, 2px) }
-          40% { transform: translate(-2px, -2px) }
-          60% { transform: translate(2px, 2px) }
-          80% { transform: translate(2px, -2px) }
-          100% { transform: translate(0) }
-        }
-
-        .glitch-text {
-          animation: glitch 1s linear infinite;
-        }
-
-        .animated-title {
-          animation: pulseGlow 3s infinite;
-        }
-      `}</style>
 
       {/* İçerik Alanı */}
       <div style={styles.content}>
@@ -119,9 +132,11 @@ export default function Home() {
 
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
-    position: 'relative',
+    position: 'fixed', // Ekran kaymalarını tamamen önlemek için fixed yapıldı
+    top: 0,
+    left: 0,
     width: '100vw',
-    height: '100vh',
+    height: '100dvh', // Adres çubuğu uyumlu dinamik yükseklik
     overflow: 'hidden',
     backgroundColor: '#0a0a0a',
     fontFamily: "'JetBrains Mono', monospace",
@@ -138,7 +153,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     height: '100%',
     backgroundImage: "url('https://cdn.discordapp.com/attachments/1524891241991372972/1526647987756077267/images_2.jpeg?ex=6a57c93c&is=6a5677bc&hm=bb0dc17f00cf715058e29bc835a45ee1be02851497f4ab35ee92cd0ef0247c96&')",
     backgroundSize: 'cover',
-    backgroundPosition: 'center',
+    backgroundPosition: 'center center',
+    backgroundRepeat: 'no-repeat',
     filter: 'blur(3px) brightness(0.4)',
     zIndex: 1,
   },
