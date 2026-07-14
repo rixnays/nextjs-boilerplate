@@ -1,65 +1,208 @@
-import Image from "next/image";
+'use client';
+
+import React, { useEffect, useState } from 'react';
 
 export default function Home() {
+  const [particles, setParticles] = useState<{ id: number; left: string; top: string; size: string; delay: string; duration: string }[]>([]);
+
+  // Siyah beyaz uçuşan partiküller için rastgele değerler oluşturuyoruz
+  useEffect(() => {
+    const generatedParticles = Array.from({ length: 40 }).map((_, i) => ({
+      id: i,
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      size: `${Math.random() * 4 + 2}px`,
+      delay: `${Math.random() * 5}s`,
+      duration: `${Math.random() * 10 + 5}s`,
+    }));
+    setParticles(generatedParticles);
+  }, []);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main style={styles.container}>
+      {/* Arka Plan Görseli */}
+      <div style={styles.bgImage} />
+
+      {/* Siyah Yarı Saydam Katman (Yazıların okunması ve karanlık tema için) */}
+      <div style={styles.overlay} />
+
+      {/* Uçuşan Partiküller */}
+      <div style={styles.particleContainer}>
+        {particles.map((p) => (
+          <div
+            key={p.id}
+            className="particle"
+            style={{
+              position: 'absolute',
+              left: p.left,
+              top: p.top,
+              width: p.size,
+              height: p.size,
+              backgroundColor: p.id % 2 === 0 ? '#ffffff' : '#000000',
+              borderRadius: '50%',
+              opacity: 0.6,
+              animation: `floatUp ${p.duration} linear infinite`,
+              animationDelay: p.delay,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* CSS Animasyonları */}
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
+
+        @keyframes floatUp {
+          0% {
+            transform: translateY(100vh) scale(0);
+            opacity: 0;
+          }
+          50% {
+            opacity: 0.7;
+          }
+          100% {
+            transform: translateY(-20vh) scale(1);
+            opacity: 0;
+          }
+        }
+
+        @keyframes pulseGlow {
+          0%, 100% {
+            text-shadow: 0 0 10px rgba(255,255,255,0.2), 0 0 20px rgba(255,255,255,0.2);
+          }
+          50% {
+            text-shadow: 0 0 20px rgba(255,0,0,0.6), 0 0 40px rgba(255,0,0,0.4);
+            color: #ff3333;
+          }
+        }
+
+        @keyframes glitch {
+          0% { transform: translate(0) }
+          20% { transform: translate(-2px, 2px) }
+          40% { transform: translate(-2px, -2px) }
+          60% { transform: translate(2px, 2px) }
+          80% { transform: translate(2px, -2px) }
+          100% { transform: translate(0) }
+        }
+
+        .glitch-text {
+          animation: glitch 1s linear infinite;
+        }
+
+        .animated-title {
+          animation: pulseGlow 3s infinite;
+        }
+      `}</style>
+
+      {/* İçerik Alanı */}
+      <div style={styles.content}>
+        <h1 className="animated-title" style={styles.title}>
+          CTRL + C & CTRL + V IS NOT HACKING
+        </h1>
+        
+        <p style={styles.subtitle} className="glitch-text">
+          Imagine calling yourself a "developer" or "hackerman" while spoon-feeding on leaked, open-source repositories.
+        </p>
+
+        <div style={styles.box}>
+          <span style={styles.codeText}>$ git clone https://github.com/skid/brain.git</span><br />
+          <span style={styles.errorText}>[!] Error: Repository not found. Brain tissue missing.</span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+
+        <p style={styles.footer}>
+          Stop pasting code you don't understand. 🤫
+        </p>
+      </div>
+    </main>
   );
 }
+
+const styles: { [key: string]: React.CSSProperties } = {
+  container: {
+    position: 'relative',
+    width: '100vw',
+    height: '100vh',
+    overflow: 'hidden',
+    backgroundColor: '#0a0a0a',
+    fontFamily: "'JetBrains Mono', monospace",
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: '#ffffff',
+  },
+  bgImage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundImage: "url('https://cdn.discordapp.com/attachments/1524891241991372972/1526647987756077267/images_2.jpeg?ex=6a57c93c&is=6a5677bc&hm=bb0dc17f00cf715058e29bc835a45ee1be02851497f4ab35ee92cd0ef0247c96&')",
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    filter: 'blur(3px) brightness(0.4)',
+    zIndex: 1,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(10, 10, 10, 0.65)',
+    zIndex: 2,
+  },
+  particleContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    zIndex: 3,
+    pointerEvents: 'none',
+  },
+  content: {
+    position: 'relative',
+    zIndex: 4,
+    textAlign: 'center',
+    padding: '20px',
+    maxWidth: '800px',
+  },
+  title: {
+    fontSize: '2.8rem',
+    fontWeight: 800,
+    letterSpacing: '-1px',
+    marginBottom: '20px',
+    textTransform: 'uppercase',
+    transition: 'color 0.5s',
+  },
+  subtitle: {
+    fontSize: '1.2rem',
+    color: '#cccccc',
+    lineHeight: '1.6',
+    marginBottom: '40px',
+  },
+  box: {
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    border: '1px solid #333333',
+    padding: '20px',
+    borderRadius: '8px',
+    textAlign: 'left',
+    display: 'inline-block',
+    fontFamily: "'JetBrains Mono', monospace",
+    boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+    marginBottom: '30px',
+  },
+  codeText: {
+    color: '#a9ffb4',
+  },
+  errorText: {
+    color: '#ff6b6b',
+    display: 'inline-block',
+    marginTop: '5px',
+  },
+  footer: {
+    fontSize: '1rem',
+    color: '#666666',
+    fontStyle: 'italic',
+  }
+};
